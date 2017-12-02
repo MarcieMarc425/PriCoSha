@@ -3,9 +3,9 @@
         res.render('landing.ejs');
     });
 
-    app.get('/login', function (req, res) {
-        res.render('login.ejs');
-    });
+    //app.get('/login', function (req, res) {
+    //    res.render('login.ejs');
+    //});
 
     app.get('/homepage', loggedIn, function (req, res) {
         res.render('homepage.ejs', {
@@ -20,8 +20,8 @@
         res.redirect('/');
     }
 
-    app.post('/login', passport.authenticate('local-login', {
+    app.post('/', passport.authenticate('local-login', {
         successRedirect: '/homepage',
-        failureRedirect: '/login'
+        failureRedirect: '/'
     }));
 }
