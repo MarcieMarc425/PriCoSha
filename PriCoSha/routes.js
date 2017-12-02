@@ -3,10 +3,6 @@
         res.render('landing.ejs');
     });
 
-    //app.get('/login', function (req, res) {
-    //    res.render('login.ejs');
-    //});
-
     app.get('/homepage', loggedIn, function (req, res) {
         res.render('homepage.ejs', {
             user: req.user
