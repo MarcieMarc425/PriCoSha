@@ -12,9 +12,9 @@ PriCoSha is a mock social network web application developed with NodeJS, Express
 
 ## TODO:
 - Switch password hashing from md5 to SHA-1/SHA-2 and salt
-- Update homepage to show contents and info about contents
+- Update social feed to futher show additional info suhc as comments and taggees
 - Upgrade homepage to bootstrap
-- Implement posting content system
 - Implement notification system
 - Implement tag system
 - Document codes so they are readable
+- Allow users to add friend to user-specified group
