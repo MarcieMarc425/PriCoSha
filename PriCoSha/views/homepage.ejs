@@ -5,6 +5,28 @@
 </head>
 <body>
 	<h1> PriCoSha Social Feed </h1>
-	<p>You need a very high iq to read the rest of the page. Wubbalubbadubdub.</p>
+	<form action="/post_content" method="post">
+	<input type="text" name="contentName" placeholder="Content Name" />
+	<input type="text" name="fPath" placeholder="File Path" />
+	<button type="submit">Post</button>
+	</form>
+	<table style = "width:100%">
+		<tr>
+			<td>ID</td>
+			<td>Username</td>
+			<td>Time Posted</td>
+			<td>File Path</td>
+			<td>Content Name</td>
+		</tr>
+	<% for (var i in data) { %>
+		<tr>
+			<td><%= data[i].id %></td>
+			<td><%= data[i].username %></td>
+			<td><%= data[i].timest %></td>
+			<td><%= data[i].file_path %></td>
+			<td><%= data[i].content_name %></td>
+		</tr>
+	<% } %>
+	<table>
 </body>
 </html>

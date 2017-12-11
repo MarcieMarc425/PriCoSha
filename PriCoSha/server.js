@@ -10,6 +10,8 @@ var session = require('express-session');
 
 require('./passport')(passport);
 
+
+
 app.use(morgan('dev'));
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({

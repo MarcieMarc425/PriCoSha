@@ -5,5 +5,4 @@
         'password': ''
     },
     'database': 'pricosha_fall',
-    'users_table': 'users'
 };
