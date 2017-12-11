@@ -13,7 +13,9 @@
     "morgan": "1.9.0",
     "mysql": "2.15.0",
     "passport": "0.4.0",
-    "passport-local": "1.0.0"
+    "passport-local": "1.0.0",
+    "moment": "2.19.4",
+    "node-datetime": "2.0.3"
   },
   "description": "PriCoSha",
   "license": "(MIT OR Apache-2.0)",

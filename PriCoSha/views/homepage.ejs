@@ -4,12 +4,27 @@
 	<title>Welcome!</title>
 </head>
 <body>
-	<h1> PriCoSha Social Feed </h1>
+	<h1> Post something </h1>
 	<form action="/post_content" method="post">
-	<input type="text" name="contentName" placeholder="Content Name" />
-	<input type="text" name="fPath" placeholder="File Path" />
-	<button type="submit">Post</button>
+		<label for="title">Title: </label>
+        <input type="text" name="title" id="title" placeholder="Give your content a title" />
+		<br />
+		<label for="file_path">File Path: </label>
+		<input type="text" name="file_path" placeholder="Enter file path here (C:\...)" />
+		<br />
+		<label for="share_view">Post visibility: </label>
+		<select name="share_view" id="share_view">
+			<% for (var i in fg) { %>
+				<option value = "<%= fg[i].group_name %>">
+					<%= fg[i].group_name %>
+				</option>
+			<% } %>
+			<option value = "public">Public</option>
+		</select>
+		<br />
+        <button type="submit">Post</button>
 	</form>
+	<h1> PriCoSha Social Feed </h1>
 	<table style = "width:100%">
 		<tr>
 			<td>ID</td>
@@ -18,15 +33,29 @@
 			<td>File Path</td>
 			<td>Content Name</td>
 		</tr>
-	<% for (var i in data) { %>
+	<% for (var i in content) { %>
 		<tr>
-			<td><%= data[i].id %></td>
-			<td><%= data[i].username %></td>
-			<td><%= data[i].timest %></td>
-			<td><%= data[i].file_path %></td>
-			<td><%= data[i].content_name %></td>
+			<td><%= content[i].id %></td>
+			<td><%= content[i].username %></td>
+			<td><%= content[i].timest %></td>
+			<td><%= content[i].file_path %></td>
+			<td><%= content[i].content_name %></td>
 		</tr>
 	<% } %>
 	<table>
+	<h1>Add a Friend to your group!</h1>
+	<form action="/add" method="post">
+		<label for="fd_username">Username: </label>
+        <input type="text" name="fd_username" id="fd_username" placeholder="Enter friend's username" />
+		<select name="add_fd_group" id="add_fd_group">
+			<% for (var i in fg) { %>
+				<option value = "<%= fg[i].group_name %>">
+					<%= fg[i].group_name %>
+				</option>
+			<% } %>
+			<option value = "public">Public</option>
+		</select>
+        <button type="submit">Add</button>
+	</form>
 </body>
 </html>
