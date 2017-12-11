@@ -44,7 +44,7 @@
 	<% } %>
 	<table>
 	<h1>Add a Friend to your group!</h1>
-	<form action="/add" method="post">
+	<form action="/add_friend" method="post">
 		<label for="fd_username">Username: </label>
         <input type="text" name="fd_username" id="fd_username" placeholder="Enter friend's username" />
 		<select name="add_fd_group" id="add_fd_group">
@@ -53,7 +53,6 @@
 					<%= fg[i].group_name %>
 				</option>
 			<% } %>
-			<option value = "public">Public</option>
 		</select>
         <button type="submit">Add</button>
 	</form>
