@@ -40,6 +40,16 @@
 			<td><%= content[i].timest %></td>
 			<td><%= content[i].file_path %></td>
 			<td><%= content[i].content_name %></td>
+			<td>
+				<form action = "/add_info" method="post">
+					<button type="submit" name="additional_info" value="<%= i %>">Additional Info</button>
+				</form>
+			</td>
+			<td>
+				<form action = "/tag" method="post">
+					<button type="submit" name="<%= i %>_tag_person">Tag Person</button>
+				</form>
+			</td>
 		</tr>
 	<% } %>
 	<table>
@@ -56,5 +66,7 @@
 		</select>
         <button type="submit">Add</button>
 	</form>
+	<h1>Tag Manager</h1>
+	<p>No new tags!</p>
 </body>
 </html>

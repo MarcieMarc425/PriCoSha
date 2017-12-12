@@ -7,8 +7,6 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mysql = require('mysql');
 var session = require('express-session');
-var moment = require('moment');
-var dateTime = require('node-datetime');
 
 
 require('./passport')(passport);

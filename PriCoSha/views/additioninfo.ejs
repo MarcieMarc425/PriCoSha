@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Additional Info</title>
+</head>
+<body>
+	<h1>Additional info on content</h1>
+	<h3>Comment</h3>
+	<table style = "width:100%">
+		<tr>
+			<td>Username</td>
+			<td>Time Commented</td>
+			<td>Comment Text</td>
+		</tr>
+		<% for (var i in comment) { %>
+		<tr>
+			<td><%= comment[i].username %></td>
+			<td><%= comment[i].timest %></td>
+			<td><%= comment[i].comment_text %></td>
+		</tr>
+	<% } %>
+	<table>
+	<h3>Tag</h3>
+	<table style = "width:100%">
+		<tr>
+			<td>User tagged in content</td>
+			<td>Tagged by</td>
+			<td>Time Tagged</td>
+		</tr>
+		<% for (var i in tag) { %>
+		<tr>
+			<td><%= tag[i].username_taggee %></td>
+			<td><%= tag[i].username_tagger %></td>
+			<td><%= tag[i].timest %></td>
+		</tr>
+	<% } %>
+	<table>
+	<br />
+	<form action="/backtohome" method="post">
+		<button type="submit">Go Back</button>
+	</form>
+</body>
+</html>

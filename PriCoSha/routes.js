@@ -1,9 +1,6 @@
 ﻿var mysql = require('mysql');
 var configDB = require('./database');
 var connection = mysql.createConnection(configDB.connection);
-var moment = require('moment');
-var dateTime = require('node-datetime');
-
 
 connection.query('USE ' + configDB.database);
 
@@ -25,6 +22,7 @@ module.exports = function (app, passport) {
 
             console.log('SELECT * FROM content query - Sucess');
             req.content = rows;
+
             return next();
         });
     }
@@ -201,6 +199,61 @@ module.exports = function (app, passport) {
 
         res.redirect('/homepage');
 
+    });
+
+    app.post('/tag', getContent, getTag, function (req, res) {
+        res.render('tagperson.ejs');
+
+    });
+
+    function getComment(req, res, next) {
+        var order = req.body.additional_info;
+        var content_id = req.content[order].id;
+        console.log(content_id);
+        var query = "SELECT * FROM comment WHERE id = " + content_id;
+
+        connection.query(query, function (err, rows, fields) {
+            if (err)
+                throw err;
+
+            req.comment = rows;
+
+            console.log(req.comment);
+            console.log('SELECT * FROM comment query success');
+            return next();
+        });
+    }
+
+    function getTag(req, res, next) {
+        var order = req.body.additional_info;
+        var content_id = req.content[order].id;
+
+        var query = "SELECT * FROM tag WHERE id = " + content_id + " AND status = 1";
+
+        connection.query(query, function (err, rows, fields) {
+            if (err)
+                throw err;
+
+            req.tag = rows;
+
+            console.log(req.comment);
+            console.log('SELECT * FROM tag query success');
+            return next();
+        });
+    }
+
+    app.post('/add_info', getContent, getComment, getTag, function (req, res) {
+
+        res.render('additioninfo.ejs', {
+
+            comment: req.comment,
+            tag: req.tag
+
+        });
+    });
+
+    app.post('/backtohome', function (req, res) {
+        res.redirect('/homepage');
     });
 
 }
