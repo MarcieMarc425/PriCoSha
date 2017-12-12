@@ -1,6 +1,7 @@
 ﻿var mysql = require('mysql');
 var configDB = require('./database');
 var connection = mysql.createConnection(configDB.connection);
+var moment = require('moment')
 
 connection.query('USE ' + configDB.database);
 
@@ -22,6 +23,8 @@ module.exports = function (app, passport) {
 
             console.log('SELECT * FROM content query - Sucess');
             req.content = rows;
+
+            console.log(req.content);
 
             return next();
         });
@@ -45,10 +48,28 @@ module.exports = function (app, passport) {
         });
     }
 
+    function getTagApprove(req, res, next) {
+        var uID = {};
+        uID = JSON.stringify(req.user).split(',');
+        var username = uID[0].split("\"");
+
+        var query = "SELECT * FROM tag WHERE username_taggee = '" + username[3] + "' AND status = 0";
+
+        connection.query(query, function (err, rows, fields) {
+            if (err)
+                throw err;
+
+            req.managetag = rows;
+
+            return next();
+        });
+    }
+
     function renderHomepage(req, res) {
         res.render('homepage.ejs', {
             content: req.content,
-            fg: req.fg
+            fg: req.fg,
+            tag: req.managetag
         })
     }
 
@@ -59,7 +80,7 @@ module.exports = function (app, passport) {
         res.redirect('/');
     }
 
-    app.get('/homepage', loggedIn, getContent, getFG, renderHomepage);
+    app.get('/homepage', loggedIn, getContent, getFG, getTagApprove, renderHomepage);
 
     app.post('/', passport.authenticate('local-login', {
         successRedirect: '/homepage',
@@ -201,8 +222,84 @@ module.exports = function (app, passport) {
 
     });
 
-    app.post('/tag', getContent, getTag, function (req, res) {
-        res.render('tagperson.ejs');
+    var cid;
+
+    app.post('/tag', getContent, function (req, res) {
+        var order = req.body.tag_person;
+        var content_id = req.content[order].id;
+        cid = content_id;
+        res.render('tagperson.ejs', {
+
+            cid: content_id
+
+        });
+
+    });
+
+    function isVisible(req, res, next) {
+        var uID = {};
+        uID = JSON.stringify(req.user).split(',');
+        var username = uID[0].split("\"");
+        req.tagger = username[3];
+        req.taggee = req.body.uname;
+
+        var query = "SELECT * FROM content WHERE public = 1 OR id in (SELECT id FROM member, share WHERE member.group_name = share.group_name AND member.username_creator = share.username AND member.username = '" + req.taggee + "')";
+
+        connection.query(query, function (err, rows, fields) {
+            if (err)
+                throw err;
+
+            console.log('ID visible query - Success');
+            req.visibleID = rows;
+
+            return next();
+
+        });
+
+    }
+
+    function insertTag(req, res, next) {
+        req.objID = 0;
+
+        for (var i in req.visibleID) {
+            if (cid == req.visibleID[i].id)
+                req.objID = req.visibleID[i].id;
+        }
+
+        return next();
+
+    }
+
+    app.post('/completetag', isVisible, insertTag, function (req, res) {
+
+        var query;
+
+        console.log(req.objID);
+        console.log(req.tagger);
+        console.log(req.taggee);
+        
+        if (req.objID == 0) {
+            console.log("Content not visible to taggee.");
+            res.redirect('/tag');
+        } else if (req.tagger == req.taggee) {
+            query = "INSERT INTO tag VALUES (" + req.objID + ", '" +
+                req.tagger + "', '" + req.taggee + "', CURRENT_TIMESTAMP, 1)";
+            connection.query(query, function (err, res) {
+                if (err)
+                    throw err;
+                console.log('INSERT INTO tag query - Success');
+            });
+            res.redirect('/homepage');
+        } else {
+            query = "INSERT INTO tag VALUES (" + req.objID + ", '" +
+                req.tagger + "', '" + req.taggee + "', CURRENT_TIMESTAMP, 0)";
+            connection.query(query, function (err, res) {
+                if (err)
+                    throw err;
+                console.log('INSERT INTO tag query - Success');
+            });
+            res.redirect('/homepage');
+        }
 
     });
 
@@ -251,6 +348,49 @@ module.exports = function (app, passport) {
 
         });
     });
+
+    app.post('/accept_tag', function (req, res) {
+        var uID = {};
+        uID = JSON.stringify(req.user).split(',');
+        var username = uID[0].split("\"");
+
+        var query = "UPDATE tag SET status = 1 WHERE id = " + req.body.accept_tag +
+            " AND username_tagger = '" + req.body.accept_tagger_uname +
+            "' AND username_taggee = '" + username[3] +
+            "' AND timest = '" + moment(new Date(req.body.accpet_tag_time)).format('YYYY-MM-DD HH:mm:ss') + "'";
+
+        connection.query(query, function (err, res) {
+            if (err)
+                throw err;
+
+            console.log('UPDATE tag query - SUCCESS');
+        })
+
+        res.redirect('/homepage');
+
+    });
+
+    app.post('/cancel_tag', function (req, res) {
+        var uID = {};
+        uID = JSON.stringify(req.user).split(',');
+        var username = uID[0].split("\"");
+
+        var query = "DELETE FROM tag WHERE id = " + req.body.cancel_tag +
+            " AND username_tagger = '" + req.body.cancel_tagger_uname +
+            "' AND username_taggee = '" + username[3] +
+            "' AND timest = '" + moment(new Date(req.body.cancel_tag_time)).format('YYYY-MM-DD HH:mm:ss') + "'";
+
+        connection.query(query, function (err, res) {
+            if (err)
+                throw err;
+
+            console.log('DELETE tag query - SUCCESS');
+        })
+
+        res.redirect('/homepage');
+
+    });
+
 
     app.post('/backtohome', function (req, res) {
         res.redirect('/homepage');

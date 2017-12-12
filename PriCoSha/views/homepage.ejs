@@ -47,7 +47,7 @@
 			</td>
 			<td>
 				<form action = "/tag" method="post">
-					<button type="submit" name="<%= i %>_tag_person">Tag Person</button>
+					<button type="submit" name="tag_person" value="<%= i %>">Tag Person</button>
 				</form>
 			</td>
 		</tr>
@@ -67,6 +67,33 @@
         <button type="submit">Add</button>
 	</form>
 	<h1>Tag Manager</h1>
-	<p>No new tags!</p>
+	<table style = "width:100%">
+		<tr>
+			<td>Content ID</td>
+			<td>Tagged By</td>
+			<td>Time Tagged</td>
+		</tr>
+	<% for (var i in tag) { %>
+		<tr>
+			<td><%= tag[i].id %></td>
+			<td><%= tag[i].username_tagger %></td>
+			<td><%= tag[i].timest %></td>
+			<td>
+				<form action = "/accept_tag" method="post">
+					<input type="hidden" name = "accept_tagger_uname" value = "<%=tag[i].username_tagger%>"/>
+					<input type="hidden" name = "accept_tag_time" value = "<%=tag[i].timest%>"/>
+					<button type="submit" name="accept_tag" value="<%= tag[i].id %>">Accept Tag</button>
+				</form>
+			</td>
+			<td>
+				<form action = "/cancel_tag" method="post">
+					<input type="hidden" name = "cancel_tagger_uname" value = "<%=tag[i].username_tagger%>"/>
+					<input type="hidden" name = "cancel_tag_time" value = "<%=tag[i].timest%>"/>
+					<button type="submit" name="cancel_tag" value="<%= tag[i].id %>">Cancel Tag</button>
+				</form>
+			</td>
+		</tr>
+	<% } %>
+	<table>
 </body>
 </html>

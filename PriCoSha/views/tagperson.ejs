@@ -4,8 +4,9 @@
 	<title>Tag a person</title>
 </head>
 <body>
+	<h3>Propose Tag for Content <span><%= cid %></span></h3>
 	<form action="/completetag" method="post">
-		<label for="title">Person to tag: </label>
+		<label for="uname">Person to tag: </label>
         <input type="text" name="uname" id="uname" placeholder="Enter the username of person you want to tag" />
 		<br />
 		<button type="submit">Finish Tagging</button>
