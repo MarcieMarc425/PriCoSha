@@ -8,6 +8,7 @@ var bodyParser = require('body-parser');
 var mysql = require('mysql');
 var session = require('express-session');
 var moment = require('moment');
+var flash = require('connect-flash')
 
 
 require('./passport')(passport);
@@ -32,6 +33,7 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(flash());
 
 require('./routes.js')(app, passport);
 

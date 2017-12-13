@@ -23,6 +23,9 @@
         <p>Your most beloved social networking platform.</p>
       </div>
       <div class="section right col-4">
+		<% if (message.length > 0) { %>
+			<%= message %>
+        <% } %>
         <form action="/" method="post">
           <div class="form-group">
             <input type="text" class="form-control" name="username" placeholder="Username" />

@@ -30,14 +30,15 @@ module.exports = function (passport) {
                 if (err)
                     return done(err);
                 if (!rows.length) {
-                    return done(null, false);
+                    return done(null, false, req.flash('loginMessage', 'User does not exist.'));
                 }
 
                 if (md5(password) != rows[0].password)
-                    return done(null, false);
+                    return done(null, false, req.flash('loginMessage', 'Wrong password.'));
 
                 return done(null, rows[0]);
             });
         })
     );
+
 };

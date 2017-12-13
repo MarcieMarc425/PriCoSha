@@ -7,7 +7,7 @@ connection.query('USE ' + configDB.database);
 
 module.exports = function (app, passport) {
     app.get('/', function (req, res) {
-        res.render('landing.ejs');
+        res.render('landing.ejs', { message: req.flash('loginMessage')});
     });
 
     function getContent(req, res, next) {
@@ -53,7 +53,7 @@ module.exports = function (app, passport) {
         uID = JSON.stringify(req.user).split(',');
         var username = uID[0].split("\"");
 
-        var query = "SELECT * FROM tag WHERE username_taggee = '" + username[3] + "' AND status = 0";
+        var query = "SELECT * FROM tag WHERE username_taggee = '" + username[3] + "' AND status = 0 AND is_ignored = 0";
 
         connection.query(query, function (err, rows, fields) {
             if (err)
@@ -84,7 +84,8 @@ module.exports = function (app, passport) {
 
     app.post('/', passport.authenticate('local-login', {
         successRedirect: '/homepage',
-        failureRedirect: '/'
+        failureRedirect: '/',
+        failureFlash: true
     }));
 
     function postContent(req, res, next) {
@@ -227,10 +228,13 @@ module.exports = function (app, passport) {
     app.post('/tag', getContent, function (req, res) {
         var order = req.body.tag_person;
         var content_id = req.content[order].id;
+        console.log(order);
+        console.log(content_id);
         cid = content_id;
         res.render('tagperson.ejs', {
 
-            cid: content_id
+            cid: content_id,
+            //message: req.flash('tagMessage')
 
         });
 
@@ -270,20 +274,20 @@ module.exports = function (app, passport) {
 
     }
 
-    app.post('/completetag', isVisible, insertTag, function (req, res) {
-
+    function completeTagHandler(req, res) {
         var query;
 
         console.log(req.objID);
         console.log(req.tagger);
         console.log(req.taggee);
-        
+
         if (req.objID == 0) {
             console.log("Content not visible to taggee.");
+            //req.flash('tagMessage', 'Failure to tag: Content not visible to taggee');
             res.redirect('/tag');
         } else if (req.tagger == req.taggee) {
             query = "INSERT INTO tag VALUES (" + req.objID + ", '" +
-                req.tagger + "', '" + req.taggee + "', CURRENT_TIMESTAMP, 1)";
+                req.tagger + "', '" + req.taggee + "', CURRENT_TIMESTAMP, 1, 0)";
             connection.query(query, function (err, res) {
                 if (err)
                     throw err;
@@ -292,7 +296,7 @@ module.exports = function (app, passport) {
             res.redirect('/homepage');
         } else {
             query = "INSERT INTO tag VALUES (" + req.objID + ", '" +
-                req.tagger + "', '" + req.taggee + "', CURRENT_TIMESTAMP, 0)";
+                req.tagger + "', '" + req.taggee + "', CURRENT_TIMESTAMP, 0, 0)";
             connection.query(query, function (err, res) {
                 if (err)
                     throw err;
@@ -300,8 +304,9 @@ module.exports = function (app, passport) {
             });
             res.redirect('/homepage');
         }
+    }
 
-    });
+    app.post('/completetag', isVisible, insertTag, completeTagHandler);
 
     function getComment(req, res, next) {
         var order = req.body.additional_info;
@@ -370,15 +375,15 @@ module.exports = function (app, passport) {
 
     });
 
-    app.post('/cancel_tag', function (req, res) {
+    app.post('/decline_tag', function (req, res) {
         var uID = {};
         uID = JSON.stringify(req.user).split(',');
         var username = uID[0].split("\"");
 
-        var query = "DELETE FROM tag WHERE id = " + req.body.cancel_tag +
-            " AND username_tagger = '" + req.body.cancel_tagger_uname +
+        var query = "DELETE FROM tag WHERE id = " + req.body.decline_tag +
+            " AND username_tagger = '" + req.body.decline_tagger_uname +
             "' AND username_taggee = '" + username[3] +
-            "' AND timest = '" + moment(new Date(req.body.cancel_tag_time)).format('YYYY-MM-DD HH:mm:ss') + "'";
+            "' AND timest = '" + moment(new Date(req.body.decline_tag_time)).format('YYYY-MM-DD HH:mm:ss') + "'";
 
         connection.query(query, function (err, res) {
             if (err)
@@ -391,9 +396,35 @@ module.exports = function (app, passport) {
 
     });
 
+    app.post('/ignore_tag', function (req, res) {
+        var uID = {};
+        uID = JSON.stringify(req.user).split(',');
+        var username = uID[0].split("\"");
+
+        var query = "UPDATE tag SET is_ignored = 1 WHERE id = " + req.body.ignore_tag +
+            " AND username_tagger = '" + req.body.ignore_tagger_uname +
+            "' AND username_taggee = '" + username[3] +
+            "' AND timest = '" + moment(new Date(req.body.ignore_tag_time)).format('YYYY-MM-DD HH:mm:ss') + "'";
+
+        connection.query(query, function (err, res) {
+            if (err)
+                throw err;
+
+            console.log('UPDATE tag query - SUCCESS');
+        })
+
+        res.redirect('/homepage');
+
+    })
+
 
     app.post('/backtohome', function (req, res) {
         res.redirect('/homepage');
     });
 
+    app.get('/logout', function (req, res) {
+        req.session.destroy(function (err) {
+            res.redirect('/');
+        });
+    });
 }

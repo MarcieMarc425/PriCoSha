@@ -46,9 +46,9 @@
 				</form>
 			</td>
 			<td>
-				<form action = "/tag" method="post">
-					<button type="submit" name="tag_person" value="<%= i %>">Tag Person</button>
-				</form>
+			<form action = "/tag" method="post">
+				<button type="submit" name="tag_person" value="<%= i %>">Tag Person</button>
+			</form>
 			</td>
 		</tr>
 	<% } %>
@@ -86,14 +86,33 @@
 				</form>
 			</td>
 			<td>
-				<form action = "/cancel_tag" method="post">
-					<input type="hidden" name = "cancel_tagger_uname" value = "<%=tag[i].username_tagger%>"/>
-					<input type="hidden" name = "cancel_tag_time" value = "<%=tag[i].timest%>"/>
-					<button type="submit" name="cancel_tag" value="<%= tag[i].id %>">Cancel Tag</button>
+				<form action = "/decline_tag" method="post">
+					<input type="hidden" name = "decline_tagger_uname" value = "<%=tag[i].username_tagger%>"/>
+					<input type="hidden" name = "decline_tag_time" value = "<%=tag[i].timest%>"/>
+					<button type="submit" name="decline_tag" value="<%= tag[i].id %>">Decline Tag</button>
+				</form>
+			</td>
+			<td>
+				<form action = "/ignore_tag" method="post">
+					<input type="hidden" name = "ignore_tagger_uname" value = "<%=tag[i].username_tagger%>"/>
+					<input type="hidden" name = "ignore_tag_time" value = "<%=tag[i].timest%>"/>
+					<button type="submit" name="ignore_tag" value="<%= tag[i].id %>">Ignore Tag</button>
 				</form>
 			</td>
 		</tr>
 	<% } %>
 	<table>
+	<h1> Block a user </h1>
+	<form action="/block" method="post">
+		<label for="blk_username">Username: </label>
+        <input type="text" name="blk_username" id="blk_username" placeholder="Enter person's username you wish to block" />
+		<button type="submit">Block</button>
+	</form>
+	<br/>
+	<br/>
+	<br/>
+
+	<a href="/logout"><button>Logout</button></a>
+
 </body>
 </html>
