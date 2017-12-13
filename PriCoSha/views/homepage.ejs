@@ -28,7 +28,7 @@
 	<table style = "width:100%">
 		<tr>
 			<td>ID</td>
-			<td>Username</td>
+			<td>Posted By</td>
 			<td>Time Posted</td>
 			<td>File Path</td>
 			<td>Content Name</td>
@@ -102,11 +102,11 @@
 		</tr>
 	<% } %>
 	<table>
-	<h1> Block a user </h1>
-	<form action="/block" method="post">
-		<label for="blk_username">Username: </label>
-        <input type="text" name="blk_username" id="blk_username" placeholder="Enter person's username you wish to block" />
-		<button type="submit">Block</button>
+	<h1> Defriend a user </h1>
+	<form action="/defriend" method="post">
+		<label for="dfrd_username">Username: </label>
+        <input type="text" name="dfrd_username" id="dfrd_username" placeholder="Enter person's username you wish to defriend" />
+		<button type="submit">Defriend</button>
 	</form>
 	<br/>
 	<br/>

@@ -234,7 +234,6 @@ module.exports = function (app, passport) {
         res.render('tagperson.ejs', {
 
             cid: content_id,
-            //message: req.flash('tagMessage')
 
         });
 
@@ -283,8 +282,7 @@ module.exports = function (app, passport) {
 
         if (req.objID == 0) {
             console.log("Content not visible to taggee.");
-            //req.flash('tagMessage', 'Failure to tag: Content not visible to taggee');
-            res.redirect('/tag');
+            res.redirect('/homepage');
         } else if (req.tagger == req.taggee) {
             query = "INSERT INTO tag VALUES (" + req.objID + ", '" +
                 req.tagger + "', '" + req.taggee + "', CURRENT_TIMESTAMP, 1, 0)";
@@ -415,8 +413,43 @@ module.exports = function (app, passport) {
 
         res.redirect('/homepage');
 
-    })
+    });
 
+    function kickMember(req, res, next) {
+        var uID = {};
+        uID = JSON.stringify(req.user).split(',');
+        var username = uID[0].split("\"");
+
+        var query = "DELETE FROM member where username_creator = '" + username[3] + "' AND username = '" + req.body.dfrd_username + "'";
+
+        connection.query(query, function (err, res) {
+            if (err)
+                throw err;
+            console.log('DELETE FROM member query - SUCCESS');
+
+            return next();
+        })
+    }
+
+    function kickMember2(req, res, next) {
+        var uID = {};
+        uID = JSON.stringify(req.user).split(',');
+        var username = uID[0].split("\"");
+
+        var query = "DELETE FROM member where username = '" + username[3] + "' AND username_creator = '" + req.body.dfrd_username + "'";
+
+        connection.query(query, function (err, res) {
+            if (err)
+                throw err;
+            console.log('DELETE FROM member query - SUCCESS');
+
+            return next();
+        })
+    }
+
+    app.post('/defriend', kickMember, kickMember2, function (req, res) {
+        res.redirect('/homepage');
+    });
 
     app.post('/backtohome', function (req, res) {
         res.redirect('/homepage');
